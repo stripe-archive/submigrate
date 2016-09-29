@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
+	"os"
 	"sort"
 
 	"github.com/stripe/stripe-go"
@@ -24,49 +24,68 @@ func (slice Subs) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
 
+func mark(f string, args ...interface{}) {
+	fmt.Printf("-----> " + fmt.Sprintf(f, args...) + "\n")
+}
+
+func errf(err error) {
+	fmt.Println()
+	fmt.Printf("ERROR! Migration unsuccessful\n")
+	log(err.Error())
+}
+
+func log(f string, args ...interface{}) {
+	fmt.Printf("       " + fmt.Sprintf(f, args...) + "\n")
+}
+
 func combine(ids []string, key string, run bool) error {
 	if len(ids) < 2 {
-		return fmt.Errorf("need at least 2 subscription IDs, got %d", len(ids))
+		return fmt.Errorf("At least two subscription IDs are neeed, got %d", len(ids))
 	}
 
 	if len(ids) > 20 {
-		return fmt.Errorf("a maximum of 20 subscriptions can be combined, got %d", len(ids))
+		return fmt.Errorf("A maximum of 20 subscriptions can be combined, got %d", len(ids))
 	}
 
 	if run {
-		log.Println("Running in real mode; subscriptions will be changed.")
+		mark("Begginning subscription migration in <real> mode, subscriptions will be changed")
 	} else {
-		log.Println("Running in dry-run mode; no changes will be made.")
+		mark("Begginning subscription migration in <dryrun> mode")
 	}
+	log("")
 
 	api := client.New(key, nil)
 
-	// Fetch the requested subscriptions
+	mark("Fetching requested subscriptions")
 	subs := []*stripe.Sub{}
 	for _, id := range ids {
 		s, err := api.Subs.Get(id, nil)
+		log("Getting subscription %s", s.ID)
 		if err != nil {
 			return err
 		}
 		subs = append(subs, s)
 	}
+	log("Successfully fetched subscriptions\n")
 
-	// Filter out canceled subscriptions
+	mark("Filtering out canceled subscriptions")
 	active := []*stripe.Sub{}
 	for _, s := range subs {
 		if s.Status == sub.Canceled {
-			log.Printf("subscription %s is canceled, ignoring.", s.ID)
+			log("Ignoring canceled subscription %s", s.ID)
 			continue
 		}
 		active = append(active, s)
 	}
+	log("")
 
 	if len(active) == 0 {
-		return fmt.Errorf("All provided subscriptions are canceled.")
+		return fmt.Errorf("All provided subscriptions are canceled")
 	}
 
 	if len(active) == 1 {
-		log.Printf("Only one subscription (%s) is active, migration complete.\n", active[0].ID)
+		mark("Marking migration as complete")
+		log("Subscription %s is active and all other subscriptions are canceled", active[0].ID)
 		return nil
 	}
 
@@ -77,22 +96,38 @@ func combine(ids []string, key string, run bool) error {
 
 	primary, rest := sorted[len(sorted)-1], sorted[:len(sorted)-1]
 
-	log.Printf("Using subscription %s as the primary subscription", primary.ID)
+	mark("Migrating subscriptions")
+	log("Using subscription %s as the primary subscription", primary.ID)
+	for _, item := range primary.Items.Values {
+		log("> Plan: %s, Quantity: %d\n", item.Plan.ID, item.Quantity)
+	}
 
 	// Verify that all subscriptions share the same billing interval
+	errors := false
 	sharedPlan := primary.Items.Values[0].Plan
 	sharedCustomer := primary.Customer
 	for _, s := range active {
 		plan := s.Items.Values[0].Plan
 		if s.Customer.ID != sharedCustomer.ID {
-			return fmt.Errorf("Subscription %s is for customer %s, not %s", s.ID, s.Customer.ID, sharedCustomer.ID)
+			log("! Mismatch on subscription %s: Subscription is for customer %s, not %s", s.ID, s.Customer.ID, sharedCustomer.ID)
+			errors = true
+		}
+		if plan.Currency != sharedPlan.Currency {
+			log("! Mismatch on subscription %s: Plan %s bills in %s, not %s", s.ID, plan.ID, plan.Currency, sharedPlan.Currency)
+			errors = true
 		}
 		if plan.Interval != sharedPlan.Interval {
-			return fmt.Errorf("Subscription %s bills %sly, not %sly", s.ID, plan.Interval, sharedPlan.Interval)
+			log("! Mismatch on subscription %s: Plan %s bills %sly, not %sly", s.ID, plan.ID, plan.Interval, sharedPlan.Interval)
+			errors = true
 		}
 		if plan.IntervalCount != sharedPlan.IntervalCount {
-			return fmt.Errorf("Subscription %s bills every %d %s, not every %d %s", s.ID, plan.IntervalCount, plan.Interval, sharedPlan.IntervalCount, sharedPlan.Interval)
+			log("! Mismatch on subscription %s: Plan %s bills every %d %ss, not every %d %ss", s.ID, plan.ID, plan.IntervalCount, plan.Interval, sharedPlan.IntervalCount, sharedPlan.Interval)
+			errors = true
 		}
+	}
+
+	if errors {
+		return fmt.Errorf("Subscriptions and related plans have properties that do not match")
 	}
 
 	// Updating the subscription
@@ -105,38 +140,45 @@ func combine(ids []string, key string, run bool) error {
 		})
 	}
 
-	log.Printf("Adding the following items to the primary subscription:")
+	log("Adding the following items to the primary subscription")
 	for _, item := range items {
-		log.Printf("- Plan: %s, Quantity: %d\n", item.Plan, item.Quantity)
+		log("> Plan: %s, Quantity: %d\n", item.Plan, item.Quantity)
 	}
 
 	if len(items)+1 == len(primary.Items.Values) {
-		log.Printf("Primary subscription has already been updated with the correct number of items")
+		log("Previously updated subscription, skipping")
 	} else if run {
+		log("Updating primary subscription")
 		_, err := api.Subs.Update(primary.ID, &stripe.SubParams{
 			Items: items,
 		})
 		if err != nil {
 			return err
 		}
+		log("Successfully updated primary subscription")
 	}
 
-	// Canceling the rest
+	mark("Canceling remaining subscriptions")
 	for _, s := range rest {
-		log.Printf("Canceling subscription %s", s.ID)
+		log("Ending subscription %s", s.ID)
 		if _, err := api.Subs.Cancel(s.ID, nil); err != nil {
 			return err
 		}
 	}
+	log("Successfully completed migration")
 
 	return nil
 }
 
 func main() {
-	var run = flag.Bool("run", false, "combine the subscriptions")
+	// Turn off Stripe logging
+	stripe.LogLevel = 0
+
+	var run = flag.Bool("run", false, "Run the migration; by default no actions are taken")
 	var key = flag.String("key", "", "Stripe API key")
 	flag.Parse()
 	if err := combine(flag.Args(), *key, *run); err != nil {
-		log.Fatal(err)
+		errf(err)
+		os.Exit(1)
 	}
 }
