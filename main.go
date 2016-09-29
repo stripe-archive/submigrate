@@ -81,13 +81,17 @@ func combine(ids []string, key string, run bool) error {
 
 	// Verify that all subscriptions share the same billing interval
 	sharedPlan := primary.Items.Values[0].Plan
+	sharedCustomer := primary.Customer
 	for _, s := range active {
 		plan := s.Items.Values[0].Plan
+		if s.Customer.ID != sharedCustomer.ID {
+			return fmt.Errorf("Subscription %s is for customer %s, not %s", s.ID, s.Customer.ID, sharedCustomer.ID)
+		}
 		if plan.Interval != sharedPlan.Interval {
-			return fmt.Errorf("Subscription %s bills %sly, not %sly", plan.Interval, sharedPlan.Interval)
+			return fmt.Errorf("Subscription %s bills %sly, not %sly", s.ID, plan.Interval, sharedPlan.Interval)
 		}
 		if plan.IntervalCount != sharedPlan.IntervalCount {
-			return fmt.Errorf("Subscription %s bills every %d %s, not every %d %s", plan.IntervalCount, sharedPlan.IntervalCount)
+			return fmt.Errorf("Subscription %s bills every %d %s, not every %d %s", s.ID, plan.IntervalCount, plan.Interval, sharedPlan.IntervalCount, sharedPlan.Interval)
 		}
 	}
 
