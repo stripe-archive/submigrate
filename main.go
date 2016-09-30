@@ -38,7 +38,7 @@ func log(f string, args ...interface{}) {
 	fmt.Printf("       " + fmt.Sprintf(f, args...) + "\n")
 }
 
-func combine(ids []string, key string, run bool) error {
+func combine(ids []string, key string, prorate, run bool) error {
 	if len(ids) < 2 {
 		return fmt.Errorf("At least two subscription IDs are neeed, got %d", len(ids))
 	}
@@ -130,27 +130,33 @@ func combine(ids []string, key string, run bool) error {
 		return fmt.Errorf("Subscriptions and related plans have properties that do not match")
 	}
 
-	// Updating the subscription
-	items := []*stripe.SubItemParams{}
-
-	for _, s := range rest {
-		items = append(items, &stripe.SubItemParams{
-			Plan:     s.Plan.ID,
-			Quantity: s.Quantity,
-		})
-	}
-
+	count := 0
 	log("Adding the following items to the primary subscription")
-	for _, item := range items {
-		log("> Plan: %s, Quantity: %d\n", item.Plan, item.Quantity)
+	for _, s := range rest {
+		for _, item := range s.Items.Values {
+			log("> Plan: %s, Quantity: %d\n", item.Plan.ID, item.Quantity)
+			count += 1
+		}
 	}
 
-	if len(items)+1 == len(primary.Items.Values) {
+	if count+1 == len(primary.Items.Values) {
 		log("Previously updated subscription, skipping")
 	} else if run {
 		log("Updating primary subscription")
+
+		// Updating the subscription
+		items := []*stripe.SubItemParams{}
+		for _, s := range rest {
+			for _, item := range s.Items.Values {
+				items = append(items, &stripe.SubItemParams{
+					Plan:     item.Plan.ID,
+					Quantity: item.Quantity,
+				})
+			}
+		}
 		_, err := api.Subs.Update(primary.ID, &stripe.SubParams{
-			Items: items,
+			Items:   items,
+			Prorate: prorate,
 		})
 		if err != nil {
 			return err
@@ -175,9 +181,10 @@ func main() {
 	stripe.LogLevel = 0
 
 	var run = flag.Bool("run", false, "Run the migration; by default no actions are taken")
+	var prorate = flag.Bool("prorate", false, "Prorate plans on migration")
 	var key = flag.String("key", "", "Stripe API key")
 	flag.Parse()
-	if err := combine(flag.Args(), *key, *run); err != nil {
+	if err := combine(flag.Args(), *key, *prorate, *run); err != nil {
 		errf(err)
 		os.Exit(1)
 	}
