@@ -167,19 +167,14 @@ func combine(ids []string, key string, run bool) error {
 					return err
 				}
 			}
-		}
-		log("Successfully updated primary subscription")
-	}
-	log("")
-
-	mark("Canceling remaining subscriptions")
-	for _, s := range rest {
-		log("Ending subscription %s", s.ID)
-		if run {
-			if _, err := api.Subs.Cancel(s.ID, nil); err != nil {
-				return err
+			log("Ending subscription %s", s.ID)
+			if run {
+				if _, err := api.Subs.Cancel(s.ID, nil); err != nil {
+					return err
+				}
 			}
 		}
+		log("Successfully updated primary subscription")
 	}
 	log("Successfully completed migration")
 

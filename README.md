@@ -11,9 +11,9 @@ charged once!
 
 The easiest way to use `submigrate` is to download a pre-built binary.
 
-- [OS X]()
-- [Windows]()
-- [Linux]()
+- [OS X](https://github.com/stripe/submigrate/releases/download/v1.0/submigrate-osx.zip)
+- [Windows](https://github.com/stripe/submigrate/releases/download/v1.0/submigrate-windows.zip)
+- [Linux](https://github.com/stripe/submigrate/releases/download/v1.0/submigrate-linux.tar.gz)
 
 You can also install using the Go tool.
 
