@@ -121,6 +121,10 @@ func combine(ids []string, key string, run bool) error {
 			log("! Mismatch on subscription %s: Plan %s bills %sly, not %sly", s.ID, plan.ID, plan.Interval, sharedPlan.Interval)
 			errors = true
 		}
+		if plan.TrialPeriod > 0 {
+			log("! Mismatch on subscription %s: Plan %s has a trial period", s.ID, plan.ID)
+			errors = true
+		}
 		if plan.IntervalCount != sharedPlan.IntervalCount {
 			log("! Mismatch on subscription %s: Plan %s bills every %d %ss, not every %d %ss", s.ID, plan.ID, plan.IntervalCount, plan.Interval, sharedPlan.IntervalCount, sharedPlan.Interval)
 			errors = true
