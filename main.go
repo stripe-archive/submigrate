@@ -48,9 +48,9 @@ func combine(ids []string, key string, run bool) error {
 	}
 
 	if run {
-		mark("Begginning subscription migration in <real> mode, subscriptions will be changed")
+		mark("Begginning subscription migration in REAL mode, subscriptions will be changed")
 	} else {
-		mark("Begginning subscription migration in <dryrun> mode")
+		mark("Begginning subscription migration in DRYRUN mode, no changes will be made")
 	}
 	log("")
 
@@ -99,8 +99,9 @@ func combine(ids []string, key string, run bool) error {
 	mark("Migrating subscriptions")
 	log("Using subscription %s as the primary subscription", primary.ID)
 	for _, item := range primary.Items.Values {
-		log("> Plan: %s, Quantity: %d\n", item.Plan.ID, item.Quantity)
+		log("> Plan: %s (%s), Quantity: %d", item.Plan.Name, item.Plan.ID, item.Quantity)
 	}
+	log("")
 
 	// Verify that all subscriptions share the same billing interval
 	errors := false
@@ -134,40 +135,46 @@ func combine(ids []string, key string, run bool) error {
 	log("Adding the following items to the primary subscription")
 	for _, s := range rest {
 		for _, item := range s.Items.Values {
-			log("> Plan: %s, Quantity: %d\n", item.Plan.ID, item.Quantity)
+			log("> Plan: %s (%s), Quantity: %d", item.Plan.Name, item.Plan.ID, item.Quantity)
 			count += 1
 		}
 	}
+	log("")
 
 	if count+1 == len(primary.Items.Values) {
 		log("Previously updated subscription, skipping")
-	} else if run {
+	} else {
 		log("Updating primary subscription, prorating other subscriptions")
 		for _, s := range rest {
 			items := []*stripe.SubItemsParams{}
 			for _, item := range s.Items.Values {
+				log("Added plan %s with quantity %d to %s", item.Plan.ID, item.Quantity, primary.ID)
 				items = append(items, &stripe.SubItemsParams{
 					Plan:     item.Plan.ID,
 					Quantity: item.Quantity,
 				})
 			}
-			_, err := api.Subs.Update(primary.ID, &stripe.SubParams{
-				Items:         items,
-				ProrationDate: s.PeriodEnd,
-			})
-			if err != nil {
-				return err
+			if run {
+				_, err := api.Subs.Update(primary.ID, &stripe.SubParams{
+					Items:         items,
+					ProrationDate: s.PeriodEnd,
+				})
+				if err != nil {
+					return err
+				}
 			}
 		}
-
 		log("Successfully updated primary subscription")
 	}
+	log("")
 
 	mark("Canceling remaining subscriptions")
 	for _, s := range rest {
 		log("Ending subscription %s", s.ID)
-		if _, err := api.Subs.Cancel(s.ID, nil); err != nil {
-			return err
+		if run {
+			if _, err := api.Subs.Cancel(s.ID, nil); err != nil {
+				return err
+			}
 		}
 	}
 	log("Successfully completed migration")

@@ -68,3 +68,15 @@ For each other subscription, add a new item to primary subscription with the sam
 plan and quantity as the existing subscription.
 
 Lastly, cancel all subscriptions other than the primary subscription.
+
+For example, saw we have a customer with three subscriptions for $20/month,
+$10/month and $5/month. We'll use the $20/month subscription as the primary
+because its period ends last.
+
+![Before](/docs/submigrate-before.png?raw=true)
+
+After migration, we'll have one subscription (with three items) for $35/month.
+The next billing cycle will also include two proration items for the unpaid
+periods between the two canceled subscriptions.
+
+![After](/docs/submigrate-after.png?raw=true)
