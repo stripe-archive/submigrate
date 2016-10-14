@@ -1,0 +1,205 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "4HDC8EdWPbINQvEXUcwtbZ4+Io8=",
+			"path": "github.com/stripe/stripe-go",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "wHBcL+i9xsz6V0FKpakGXCPOp+M=",
+			"path": "github.com/stripe/stripe-go/account",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "0ZPxEJkSPp2YviuvqotCbCtaV3I=",
+			"path": "github.com/stripe/stripe-go/balance",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "Fmf6yRLnZmTsESVfqazvlzwJiCM=",
+			"path": "github.com/stripe/stripe-go/bankaccount",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "na+UthPMyYVgR/ZHYcPJo/0fFiI=",
+			"path": "github.com/stripe/stripe-go/bitcoinreceiver",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "mryBTg2F3DJcI/NKpLU+JIDTUw0=",
+			"path": "github.com/stripe/stripe-go/bitcointransaction",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "3SmqSbhBeLE5WmUQ7uVDybM9fkI=",
+			"path": "github.com/stripe/stripe-go/card",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "9821tHS2B+kvu6xFo778wG0Stbw=",
+			"path": "github.com/stripe/stripe-go/charge",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "Y+kDlg7THKGAcvTZDX+HwSATIR0=",
+			"path": "github.com/stripe/stripe-go/client",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "pyJ8vKUm66iCs1WVbWeQTUPhQ9Y=",
+			"path": "github.com/stripe/stripe-go/countryspec",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "vjnUPTawzOdj94zLfYyMHeD7pt8=",
+			"path": "github.com/stripe/stripe-go/coupon",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "g4KO1AUv2DhohGAE51AkwCbF5nY=",
+			"path": "github.com/stripe/stripe-go/customer",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "2qlsPfp+iHcYURiB5uJMGhsDIng=",
+			"path": "github.com/stripe/stripe-go/discount",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "wW7iNUrBjKoX6Tps3CkqEGPpTJ0=",
+			"path": "github.com/stripe/stripe-go/dispute",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "NkWJF0OyHgDdR0rNv6LBCOkaDIw=",
+			"path": "github.com/stripe/stripe-go/event",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "xS0IAcF7IcKpmoRejfG0pRbjdXc=",
+			"path": "github.com/stripe/stripe-go/fee",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "RUQAcToinV0pEQTZqDymz+leM/Q=",
+			"path": "github.com/stripe/stripe-go/feerefund",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "iowaDpY76MJgPejVCH9ZvLcB/Uk=",
+			"path": "github.com/stripe/stripe-go/fileupload",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "842t9kGu1H5W8OC9j3UgqP/sZR0=",
+			"path": "github.com/stripe/stripe-go/invoice",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "7NpaSiDde1cXsQLR6fg/F9eu82U=",
+			"path": "github.com/stripe/stripe-go/invoiceitem",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "nNICoHYLcYmLAVX1SyEA0wxEwBU=",
+			"path": "github.com/stripe/stripe-go/order",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "y5AD80EvDutFqGuAYsBtcya6ntM=",
+			"path": "github.com/stripe/stripe-go/orderitem",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "MBclcpbzFw/ovzgAeuq/pB2OF3g=",
+			"path": "github.com/stripe/stripe-go/orderreturn",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "bIwSnEAD4i/gvRaR/rsqVQB02fw=",
+			"path": "github.com/stripe/stripe-go/plan",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "lom2Qqs1opUCH76LdXtW6g9iNP0=",
+			"path": "github.com/stripe/stripe-go/product",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "VQlh/fdJOQ4YkE3GR925I5WzO+s=",
+			"path": "github.com/stripe/stripe-go/recipient",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "AC9YCXuAvIRVBFxNLW5Olf7pgSE=",
+			"path": "github.com/stripe/stripe-go/refund",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "HKgcAZcvejJyTHeQVXunrbZK1jM=",
+			"path": "github.com/stripe/stripe-go/reversal",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "b9ph994fgn8FJ+7p8QyqI4RidGk=",
+			"path": "github.com/stripe/stripe-go/sku",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "+IvYbS62G/8+0VeQqCjqS/d3pv8=",
+			"path": "github.com/stripe/stripe-go/source",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "GzUt6Fu3gLxX/pWPSoLMb+MFass=",
+			"path": "github.com/stripe/stripe-go/sub",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "BM0Ofvdy/EASpCZaY+CPH7HwOeY=",
+			"path": "github.com/stripe/stripe-go/token",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		},
+		{
+			"checksumSHA1": "FeVF02CtrSjF/6XnIo3L/77h5B8=",
+			"path": "github.com/stripe/stripe-go/transfer",
+			"revision": "d911fad3a659e57c9247d9d56e0b7b7cf503464a",
+			"revisionTime": "2016-10-14T18:11:08Z"
+		}
+	],
+	"rootPath": "github.com/stripe/combine"
+}

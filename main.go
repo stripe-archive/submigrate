@@ -38,7 +38,7 @@ func log(f string, args ...interface{}) {
 	fmt.Printf("       " + fmt.Sprintf(f, args...) + "\n")
 }
 
-func combine(ids []string, key string, prorate, run bool) error {
+func combine(ids []string, key string, run bool) error {
 	if len(ids) < 2 {
 		return fmt.Errorf("At least two subscription IDs are neeed, got %d", len(ids))
 	}
@@ -142,25 +142,24 @@ func combine(ids []string, key string, prorate, run bool) error {
 	if count+1 == len(primary.Items.Values) {
 		log("Previously updated subscription, skipping")
 	} else if run {
-		log("Updating primary subscription")
-
-		// Updating the subscription
-		items := []*stripe.SubItemParams{}
+		log("Updating primary subscription, prorating other subscriptions")
 		for _, s := range rest {
+			items := []*stripe.SubItemsParams{}
 			for _, item := range s.Items.Values {
-				items = append(items, &stripe.SubItemParams{
+				items = append(items, &stripe.SubItemsParams{
 					Plan:     item.Plan.ID,
 					Quantity: item.Quantity,
 				})
 			}
+			_, err := api.Subs.Update(primary.ID, &stripe.SubParams{
+				Items:         items,
+				ProrationDate: s.PeriodEnd,
+			})
+			if err != nil {
+				return err
+			}
 		}
-		_, err := api.Subs.Update(primary.ID, &stripe.SubParams{
-			Items:   items,
-			Prorate: prorate,
-		})
-		if err != nil {
-			return err
-		}
+
 		log("Successfully updated primary subscription")
 	}
 
@@ -181,10 +180,9 @@ func main() {
 	stripe.LogLevel = 0
 
 	var run = flag.Bool("run", false, "Run the migration; by default no actions are taken")
-	var prorate = flag.Bool("prorate", false, "Prorate plans on migration")
 	var key = flag.String("key", "", "Stripe API key")
 	flag.Parse()
-	if err := combine(flag.Args(), *key, *prorate, *run); err != nil {
+	if err := combine(flag.Args(), *key, *run); err != nil {
 		errf(err)
 		os.Exit(1)
 	}
