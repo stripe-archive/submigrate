@@ -38,6 +38,15 @@ func log(f string, args ...interface{}) {
 	fmt.Printf("       " + fmt.Sprintf(f, args...) + "\n")
 }
 
+func SubContainsPlanID(sub *stripe.Sub, needle *stripe.Plan) *stripe.SubItem {
+	for _, item := range sub.Items.Values {
+		if (item.Plan.ID == needle.ID) {
+			return item
+		}
+	}
+	return nil
+}
+
 func combine(ids []string, key string, run bool) error {
 	if len(ids) < 2 {
 		return fmt.Errorf("At least two subscription IDs are neeed, got %d", len(ids))
@@ -152,11 +161,22 @@ func combine(ids []string, key string, run bool) error {
 		for _, s := range rest {
 			items := []*stripe.SubItemsParams{}
 			for _, item := range s.Items.Values {
-				log("Added plan %s with quantity %d to %s", item.Plan.ID, item.Quantity, primary.ID)
-				items = append(items, &stripe.SubItemsParams{
-					Plan:     item.Plan.ID,
-					Quantity: item.Quantity,
-				})
+				existing_sub := SubContainsPlanID(primary, item.Plan)
+				if (existing_sub != nil) {
+					items = append(items, &stripe.SubItemsParams{
+						ID:				existing_sub.ID,
+						Plan:     item.Plan.ID,
+						Quantity: existing_sub.Quantity + item.Quantity,
+					})
+					existing_sub.Quantity = existing_sub.Quantity + item.Quantity
+					log("Updating existing subscription item %s to quantity %d because it already subscribes %s to %s", existing_sub.ID, existing_sub.Quantity, primary.ID, item.Plan.ID)
+				} else {
+					log("Added plan %s with quantity %d to %s", item.Plan.ID, item.Quantity, primary.ID)
+					items = append(items, &stripe.SubItemsParams{
+						Plan:     item.Plan.ID,
+						Quantity: item.Quantity,
+					})
+				}
 			}
 			if run {
 				_, err := api.Subs.Update(primary.ID, &stripe.SubParams{
